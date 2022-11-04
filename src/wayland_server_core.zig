@@ -230,7 +230,7 @@ pub const Global = opaque {
         comptime DataT: type,
         data: DataT,
         comptime bind: fn (client: *Client, data: DataT, version: u32, id: u32) void,
-    ) !*Global {
+    ) error{GlobalCreateFailed}!*Global {
         return wl_global_create(
             server,
             T.getInterface(),
@@ -607,7 +607,7 @@ pub const EventLoop = opaque {
         mask: u32,
         comptime func: fn (fd: c_int, mask: u32, data: T) c_int,
         data: T,
-    ) !*EventSource {
+    ) error{AddFdFailed}!*EventSource {
         return wl_event_loop_add_fd(
             loop,
             fd,
@@ -631,7 +631,7 @@ pub const EventLoop = opaque {
         comptime T: type,
         comptime func: fn (data: T) c_int,
         data: T,
-    ) !*EventSource {
+    ) error{AddTimerFailed}!*EventSource {
         return wl_event_loop_add_timer(
             loop,
             struct {
@@ -655,7 +655,7 @@ pub const EventLoop = opaque {
         signal_number: c_int,
         comptime func: fn (signal_number: c_int, data: T) c_int,
         data: T,
-    ) !*EventSource {
+    ) error{AddSignalFailed}!*EventSource {
         return wl_event_loop_add_signal(
             loop,
             signal_number,
